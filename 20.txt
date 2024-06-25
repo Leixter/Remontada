@@ -1,0 +1,94 @@
+﻿Una "ordenación tipo cubeta" de un array unidimensional de enteros positivos, se realiza mediante un array bidimensional de enteros con filas con subíndices desde 0 hasta 9 y con columnas con subíndices desde 0 hasta n-1, donde n es el número de valores dentro del array a ordenar. Cada fila del array bidimensional se conoce como una cubeta. Escribir una función ordenar_cubeta() que tome un array de enteros y el tamaño del array como argumentos.
+
+El algoritmo respectivo es como sigue:
+a) Analice el array unidimensional y coloque cada uno de sus valores en una fila del array de cubeta basado en su dígitos menos significativos. Por ejemplo, 97 se coloca en la fila 7, 3 se coloca en la fila 3, y 100 se colo ca en la fila 0.
+b) Analice el array de cubeta y copie los valores de regreso al array original, El nuevo orden de los valores anteriores en el array unidimensional es 100, 3 y 97.
+c) Repita este proceso para cada posición digital subsecuente (decenas, centenas, miles, etc), y deténgase cuando se haya procesado el dígito más a la izquierda del número mayor.
+
+En la segunda pasada del array, 100 se coloca en la fila 0, 3 se coloca en la fila 0 (sólo tiene un dígito), y 97 se coloca en la fila 9. El orden de los valores en el array unidimensional es 100, 3 y 97. En la tercera pasada, 100 se coloca en la fila 1, 3 se coloca en la fila 0 y 97 se coloca en la fila 0 (después de 3). La ordenación por cubeta garantiza tener todos los valores de forma correcta clasificados, una vez procesado el dígito más a la izquierda del número más grande. La ordenación por cubeta se termina cuando todos los valores se copian en la fila cero del array bidimensional.
+El array bidimensional de cubetas es diez veces del tamaño del array entero a ordenarse pero da un mejor rendimiento. Por lo que esta técnica de ordenación permite un mayor rendimiento que una ordenación tipo burbuja, pero requiere de una capacidad de almacenamiento mucho mayor.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#define MAX 100
+
+// Función para encontrar el máximo número en el array
+int encontrarMax(int arr[], int n) {
+    int max = arr[0];
+    for (int i = 1; i < n; i++) {
+        if (arr[i] > max) {
+            max = arr[i];
+        }
+    }
+    return max;
+}
+
+// Función para ordenar el array utilizando ordenación tipo cubeta
+void ordenarCubeta(int arr[], int n) {
+    int cubetas[10][MAX];
+    int contador[10];
+
+    // Encontrar el número máximo para saber el número de dígitos
+    int max = encontrarMax(arr, n);
+    int numPasadas = (int)log10(max) + 1;
+
+    // Realizar ordenación por cada dígito
+    for (int pos = 0; pos < numPasadas; pos++) {
+        // Inicializar contadores de cubetas
+        for (int i = 0; i < 10; i++) {
+            contador[i] = 0;
+        }
+
+        // Colocar los números en las cubetas basándose en el dígito actual
+        for (int i = 0; i < n; i++) {
+            int digito = (arr[i] / (int)pow(10, pos)) % 10;
+            cubetas[digito][contador[digito]] = arr[i];
+            contador[digito]++;
+        }
+
+        // Copiar los números de las cubetas de regreso al array original
+        int index = 0;
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < contador[i]; j++) {
+                arr[index++] = cubetas[i][j];
+            }
+        }
+    }
+}
+
+int main() {
+    int n;
+
+    // Leer el número de elementos del array
+    printf("Ingrese el número de elementos: ");
+    scanf("%d", &n);
+
+    // Leer los elementos del array
+    int arr[n];
+    printf("Ingrese los elementos del array:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Elemento %d: ", i + 1);
+        scanf("%d", &arr[i]);
+    }
+
+    // Imprimir el array original
+    printf("\nArray original:\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    // Ordenar el array utilizando ordenación tipo cubeta
+    ordenarCubeta(arr, n);
+
+    // Imprimir el array ordenado
+    printf("\nArray ordenado:\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
